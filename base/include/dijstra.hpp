@@ -2,7 +2,7 @@ template<class vT=int,class GT>
 vector<vT> dijstra(const GT &G,int i){
 	using P=pair<vT,int>;
 	const auto n=G.size();
-	vector<vT> dis(n,INF);
+	vector<vT> dis(n,(vT)INF);
 	vector<bool> book(n,true);
 	dis[i]=0;
 	set<P> p;

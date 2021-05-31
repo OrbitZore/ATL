@@ -1,3 +1,4 @@
+template<class T>
 struct Complex{
     T x,y;
     Complex(T x=0,T y=0):x(x),y(y){}
@@ -43,7 +44,7 @@ struct fft{
 		    	W[type][i]={cos(Pi/i),(type?1:-1)*sin(Pi/i)};
 	}
 	template<int type,class U>
-	valarray<complexT<T>> _FFT(const U& B){
+	valarray<complexT<T>> _FFT(const U& B)const{
 		using cT=complexT<T>;
 		valarray<cT> A(n);
 		copy(std::begin(B),std::end(B),begin(A));
@@ -63,9 +64,9 @@ struct fft{
 	    return A;
 	}
 	template<class U>
-	valarray<complexT<T>> FFT(const U& A){return _FFT<0>(A);}
+	valarray<complexT<T>> FFT(const U& A)const{return _FFT<0>(A);}
 	template<class vT>
-	valarray<vT> DFT(const valarray<complexT<T>>& A){
+	valarray<vT> DFT(const valarray<complexT<T>>& A)const{
 		auto b=_FFT<1>(A);
 		valarray<vT> a(size);
 		if (is_integral<vT>::value)

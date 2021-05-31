@@ -12,6 +12,6 @@ struct MFset:protected vector<int>{
 	void merge(int a,int b){
 		int aa=find(a),bb=find(b);
 		if (aa!=bb)
-			this->operator[](b)=aa;
+			this->operator[](bb)=aa;
 	}
 };
