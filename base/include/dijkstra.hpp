@@ -1,5 +1,5 @@
 template<class vT=int,class GT>
-vector<vT> dijstra(const GT &G,int i){
+vector<vT> dijkstra(const GT &G,int i){
 	using P=pair<vT,int>;
 	const auto n=G.size();
 	vector<vT> dis(n,(vT)INF);
