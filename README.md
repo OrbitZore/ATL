@@ -5,7 +5,8 @@ Algorithm Template Library for ACM/ICPC
 
 ### Feature
 
-- xmake构建自动化测试工具
+- xmake构建系统
+- 自动化测试
 - 基于ACM常用C++11标准
 - 使用高级模板技巧
 - 每个算法/数据结构以文件名分类
@@ -17,3 +18,11 @@ Algorithm Template Library for ACM/ICPC
 
 可见[Project](https://github.com/OrbitZore/ATL/projects/1)
 
+### Special Thanks
+
+
+- [LibreOJ](https://loj.ac/)
+
+本项目自动化测试数据部分来自LibreOJ
+
+- [OI Wiki](http://oi-wiki.org/)

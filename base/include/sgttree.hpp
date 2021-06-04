@@ -1,5 +1,5 @@
 template<class T,class iT>
-struct ScapegoatTree{
+struct sgttree{
 	constexpr static double s_alpha=0.724;
 	constexpr static double s_beta=0.35;
 	struct Tnode{
@@ -30,7 +30,7 @@ struct ScapegoatTree{
 	static Tnode* nil;
     Tnode *head;
     
-    ScapegoatTree(){
+    sgttree(){
         head=nil=new Tnode(0,0);
         nil->rsize=nil->cover=0;
         nil->ch[0]=nil->ch[1]=nil;
@@ -118,6 +118,6 @@ struct ScapegoatTree{
     }
 };
 template<class T,class IT>
-typename ScapegoatTree<T,IT>::Tnode ScapegoatTree<T,IT>::nilnode(0,0);
+typename sgttree<T,IT>::Tnode sgttree<T,IT>::nilnode(0,0);
 template<class T,class IT>
-typename ScapegoatTree<T,IT>::Tnode* ScapegoatTree<T,IT>::nil=&ScapegoatTree<T,IT>::nilnode;
+typename sgttree<T,IT>::Tnode* sgttree<T,IT>::nil=&sgttree<T,IT>::nilnode;

@@ -1,6 +1,6 @@
-struct MFset:protected vector<int>{
-	MFset(){}
-	MFset(int size){resize(size);}
+struct mfset:protected vector<int>{
+	mfset(){}
+	mfset(int size){resize(size);}
 	void resize(int size){
 		vector<int>::resize(size);
 		iota(this->begin(),this->end(),0);

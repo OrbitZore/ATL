@@ -1,5 +1,5 @@
 template<class T,class iT>
-struct Splay{
+struct splay{
 	struct Tnode{
 	    T val;
 		iT cnt,size;
@@ -24,7 +24,7 @@ struct Splay{
 	static Tnode* nil;
     Tnode *head;
     
-    Splay(){
+    splay(){
         head=nil;
     }
     
@@ -36,7 +36,7 @@ struct Splay{
 		e->maintain();
 	}
 	
-    void splay(Tnode *&e,const T& v){
+    void Splay(Tnode *&e,const T& v){
     	if (e==nil) return ;
     	char d1=e->cmp(v);
     	if (d1==-1 || e->ch[d1]==nil){
@@ -46,7 +46,7 @@ struct Splay{
     		char d2=n1->cmp(v);
     		if (d2==-1 || n1->ch[d2]==nil) {rotate(e,d1);return ;}
     		else{
-    			splay(n1->ch[d2],v);
+    			Splay(n1->ch[d2],v);
     			if (d1==d2) {rotate(e,d1);rotate(e,d1);}
     			else {rotate(n1,d2);rotate(e,d1);}
     		}
@@ -84,11 +84,11 @@ struct Splay{
     
     void insert(const T& vs,const iT& ss=1){
     	_insert(vs,ss,head);
-    	splay(head,vs);
+    	Splay(head,vs);
     }
     
     void erase(const T& vs,const iT& ss=1){
-    	splay(head,vs);
+    	Splay(head,vs);
     	if (ss<head->cnt){
     		head->cnt-=ss;
     		head->size-=ss;
@@ -97,7 +97,7 @@ struct Splay{
     	Tnode *l=head->ch[0],*r=head->ch[1];
     	delete head;
     	if (r!=nil){
-    		splay(r,vs+1);
+    		Splay(r,vs+1);
     		r->ch[0]=l;
     		r->maintain();
     		head=r;
@@ -105,7 +105,7 @@ struct Splay{
     }
     
     iT rank(T v){
-    	splay(head,v);
+    	Splay(head,v);
         return head->ch[0]->size+(head->val<v?head->cnt:0)+1;
     }
 	
@@ -116,6 +116,6 @@ struct Splay{
     
 };
 template<class T,class IT>
-typename Splay<T,IT>::Tnode Splay<T,IT>::nilnode(0,0);
+typename splay<T,IT>::Tnode splay<T,IT>::nilnode(0,0);
 template<class T,class IT>
-typename Splay<T,IT>::Tnode* Splay<T,IT>::nil=&Splay<T,IT>::nilnode;
+typename splay<T,IT>::Tnode* splay<T,IT>::nil=&splay<T,IT>::nilnode;

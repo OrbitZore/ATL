@@ -1,10 +1,10 @@
 #include <bits/stdc++.h>
+using namespace std;
 using INT=int;
 //#define int long long
 #define pb push_back
 #define eb emplace_back
 #define all(a) (a).begin(),(a).end()
-using namespace std;
 auto &_=std::ignore;
 using ll=long long;
 template<class T>

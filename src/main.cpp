@@ -5,11 +5,11 @@ using namespace std;
 
 int main(int argc,char *argv[]){
     {
-        tester::working_path=fs::path(argv[0]);
+        TesterManager::working_path=fs::path(argv[0]);
         do{
-            tester::working_path=tester::working_path.parent_path();
+            TesterManager::working_path=TesterManager::working_path.parent_path();
         }while (![&](){
-            auto dir=fs::directory_iterator(tester::working_path);
+            auto dir=fs::directory_iterator(TesterManager::working_path);
             for (auto &i:dir){
                 if (i.path().filename()=="data"){
                     return true;
@@ -17,7 +17,10 @@ int main(int argc,char *argv[]){
             }
             return false;
         }());
-        tester::working_path/="data";
+        TesterManager::working_path/="data";
     }
-    cout << tester::working_path << endl;
+    cerr << TesterManager::working_path << endl;
+    TesterManager test;
+    bool f=test.benchmark();
+    cerr << "Complete! Status:" << f << endl;
 }

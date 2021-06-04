@@ -1,7 +1,7 @@
 add_rules("mode.debug", "mode.release")
 set_default()
 target("test")
-    set_languages("c++2a")
+    set_languages("c++20")
     set_kind("binary")
     set_optimize("faster")
     set_warnings("all")
