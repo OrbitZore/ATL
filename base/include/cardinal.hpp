@@ -106,26 +106,26 @@ ostream& print(const char *c,Args&& ...rest){return _format(cout,c,forward<Args>
 #endif
 template<class T,class ...Args>
 struct Rtar{
-	T& a;const tuple<Args...> n;
-	Rtar(T& a,const tuple<Args...> n):a(a),n(n){}
+	T& a;tuple<Args...> n;
+	Rtar(T& a,tuple<Args...> n):a(a),n(n){}
 };
 template<class T,class ...Args>
-Rtar<T,Args...> rtar(T &a,Args... rest){
-	return Rtar<T,Args...>(a,make_tuple(rest...));
+Rtar<T,Args&...> rtar(T &a,Args&... rest){
+	return Rtar<T,Args&...>(a,tie(rest...));
 }
 template<size_t i,class T,class ...Args>
-auto operator>>(istream& is,Rtar<T,Args...> r)->decltype(
+auto operator>>(istream& is,Rtar<T,Args&...> r)->decltype(
 typename enable_if<i==tuple_size<decltype(r.n)>::value>::type(1),is){
 	return is>>r.a;
 }
 template<size_t i=0,class T,class ...Args>
-auto operator>>(istream& is,Rtar<T,Args...> r)->decltype(
+auto operator>>(istream& is,Rtar<T,Args&...> r)->decltype(
 typename enable_if<i!=tuple_size<decltype(r.n)>::value>::type(1),is){
 	using OT=typename decay<decltype(r.a)>::type::value_type;
 	auto inserter=back_inserter(r.a);
 	for (size_t j=0;j<get<i>(r.n);j++){
 		OT w;
-		operator>> <i+1>(is,Rtar<OT,Args...>(w,r.n));
+		operator>> <i+1>(is,Rtar<OT,Args&...>(w,r.n));
 		inserter=w;
 	}
 	return is;

@@ -3,10 +3,16 @@ struct sgttree{
 	constexpr static double s_alpha=0.724;
 	constexpr static double s_beta=0.35;
 	struct Tnode{
+        static Tnode nilnode;
+        static Tnode* nil;
 	    T val;
 	    iT cnt,size,cover,rsize;
 	    Tnode *ch[2];
 	    Tnode (T v,iT c){val=v;cnt=size=c;rsize=(c!=0);cover=1;}
+        ~Tnode(){
+            if (ch[0]!=Tnode::nil) delete ch[0];
+            if (ch[1]!=Tnode::nil) delete ch[1];
+        }
 	    void maintain(){
 	                    size=cnt+ch[0]->size+ch[1]->size;
 	                    rsize=(cnt!=0?1:0)+ch[0]->rsize+ch[1]->rsize;
@@ -26,26 +32,21 @@ struct sgttree{
 	        k=p;return 1;
 	    }
 	};
-	static Tnode nilnode;
-	static Tnode* nil;
     Tnode *head;
     
-    sgttree(){
-        head=nil=new Tnode(0,0);
-        nil->rsize=nil->cover=0;
-        nil->ch[0]=nil->ch[1]=nil;
-    }
+    sgttree():head(Tnode::nil){}
+    ~sgttree(){if (head!=Tnode::nil) delete head;}
     int ci;
     void toArr(Tnode *e,vector<Tnode*> &g){
-        if (e==nil) return ;
-        if (e->ch[0]!=nil) toArr(e->ch[0],g);
+        if (e==Tnode::nil) return ;
+        if (e->ch[0]!=Tnode::nil) toArr(e->ch[0],g);
         if (e->cnt) g.pb(e);
-        if (e->ch[1]!=nil) toArr(e->ch[1],g);
+        if (e->ch[1]!=Tnode::nil) toArr(e->ch[1],g);
         if (!e->cnt) delete e;
     }
 
     Tnode* toTree(int l,int r,vector<Tnode*> &g){
-        if (l>=r) return nil;
+        if (l>=r) return Tnode::nil;
         int mid=(l+r)>>1;
         Tnode &e=*(g[mid]);
         e.ch[0]=toTree(l,mid,g);
@@ -55,7 +56,7 @@ struct sgttree{
     }
 
     void reBuild(Tnode *&e){
-        if (e!=nil){
+        if (e!=Tnode::nil){
         	vector<Tnode*> g;
         	g.reserve(e->cover);
             toArr(e,g);
@@ -66,9 +67,9 @@ struct sgttree{
     Tnode **to;
     T v;iT s;
     void insert(Tnode *&e){
-        if (e==nil){
+        if (e==Tnode::nil){
             e=new Tnode(v,s);
-            e->ch[0]=e->ch[1]=nil;
+            e->ch[0]=e->ch[1]=Tnode::nil;
             return ;
         }
         char d=e->cmp(v);
@@ -80,7 +81,7 @@ struct sgttree{
     }
 
     void erase(Tnode *&e){
-        if (e==nil) return ;
+        if (e==Tnode::nil) return ;
         char d=e->cmp(v);
         if (d==-1)
             e->cnt=max(0,e->cnt-s);
@@ -90,7 +91,7 @@ struct sgttree{
 
     void insert(T vs,iT ss=1){
         v=vs;s=ss;
-        to=&nil;
+        to=&Tnode::nil;
         insert(head);
         reBuild(*to);
     }
@@ -104,7 +105,7 @@ struct sgttree{
 
     iT rank(T v){
         Tnode *e=head;iT k=1;char d;
-        while (e!=nil&&(d=e->cmp(v))!=-1){
+        while (e!=Tnode::nil&&(d=e->cmp(v))!=-1){
             if (d==1) k+=e->ch[0]->size+e->cnt;
             e=e->ch[d];
         }
@@ -118,6 +119,11 @@ struct sgttree{
     }
 };
 template<class T,class IT>
-typename sgttree<T,IT>::Tnode sgttree<T,IT>::nilnode(0,0);
+typename sgttree<T,IT>::Tnode sgttree<T,IT>::Tnode::nilnode=[](){
+    Tnode nil(0,0);
+    nil.rsize=nil.cover=0;
+    nil.ch[0]=nil.ch[1]=&sgttree<T,IT>::Tnode::nilnode;;
+    return nil;
+}();
 template<class T,class IT>
-typename sgttree<T,IT>::Tnode* sgttree<T,IT>::nil=&sgttree<T,IT>::nilnode;
+typename sgttree<T,IT>::Tnode* sgttree<T,IT>::Tnode::nil=&sgttree<T,IT>::Tnode::nilnode;
