@@ -11,73 +11,71 @@ template<class T>
 using vec=vector<T>;
 template<bool B,class T=void>
 using enableif_t=typename enable_if<B,T>::type;
-template<class T>
-struct canOut{
-	template<class C>
-	constexpr static auto is(int i)->decltype(cout<<*(C*)(0),true){
-		return true;
-	}
-	template<class C>
-	constexpr static bool is(...){
-		return false;
-	}
-	static const bool value=is<T>(1);
+
+#define DEF_COULD(name,exp) \
+template<class U> \
+struct name{\
+	template<class T>\
+	constexpr static auto is(int i)->decltype(exp,true){return true;}\
+	template<class T>\
+	constexpr static bool is(...){return false;}\
+	static const bool value=is<U>(1);\
 };
-constexpr struct{
-	template<class T>
-	constexpr operator T()const {return numeric_limits<T>::max();}
-} INF;
-constexpr struct{
-	template<class T>
-	constexpr operator T()const {return numeric_limits<T>::min();}
-} MINF;
+#define DEF_CAN(name,exp) DEF_COULD(can##name,exp)
+#define ENABLE(T,name) enableif_t<can##name<T>::value>(1)
+#define ENABLEN(T,name) enableif_t<!can##name<T>::value>(1)
+#define FOR_TUPLE enableif_t<i!=tuple_size<T>::value>(1)
+#define END_TUPLE enableif_t<i==tuple_size<T>::value>(1)
+
+#define DEF_INF(name,exp)\
+constexpr struct{\
+	template<class T>\
+	constexpr operator T()const {return numeric_limits<T>::exp();}\
+} name;
+
+DEF_CAN(Out,(cout<<*(T*)(0))) DEF_CAN(For,begin(*(T*)(0)))
+DEF_INF(INF,max) DEF_INF(MINF,min)
+
 template<size_t i,class T>
-auto operator>>(istream& is,T &r)->decltype(
-enableif_t<i==tuple_size<T>::value>(1),is){return is;}
+auto operator>>(istream& is,T &r)->decltype(END_TUPLE,is){
+	return is;
+}
 template<size_t i=0,class T>
-auto operator>>(istream& is,T &r)->decltype(
-enableif_t<i!=tuple_size<T>::value>(1),is){
+auto operator>>(istream& is,T &r)->decltype(FOR_TUPLE,is){
 	is>>get<i>(r);
 	return operator>> <i+1>(is,r);
 }
 template<class T>
-auto __format(ostream &os,const char *c,const T& cv)->decltype(os<<cv,c+1){
+auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLE(T,Out),c+1){
 	os << cv;
 	while (*c!='}') c++;
 	return c+1;
 }
 template<size_t i,class T>
-auto __format(ostream &os,const char *c,const T& cv)->decltype(
-enableif_t<i==tuple_size<T>::value>(1),c+1){return c;}
+auto __format(ostream &os,const char *c,const T& cv)->decltype(END_TUPLE,c+1){
+	return c;
+}
 template<size_t i=0,class T>
-auto __format(ostream &os,const char *c,const T& cv)->decltype(
-enableif_t<i!=tuple_size<T>::value>(1),c+1){
+auto __format(ostream &os,const char *c,const T& cv)->decltype(FOR_TUPLE,c+1){
 	while (*c!='{') os << *c++;
 	c=__format(os,c,get<i>(cv));
 	return __format<i+1>(os,c,cv);
 }
 template<class T>
-auto __format(ostream &os,const char *c,const T& cv)->decltype(
-enableif_t<!canOut<T>::value>(1),begin(cv),c+1){
+auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLEN(T,Out),ENABLE(T,For),c+1){
 	const char *ct=c+1;
 	if (cv.size()==0){
-		while (*ct!='{') ct++;
 		while (*ct!='}') ct++;
 		ct++;
 		while (*ct!='}') ct++;
-		return ct+1;
-	}
-	size_t ic=0;
-	for (auto &i:cv){
-		const char *cc=c+1;
-		while (*cc!='{'){
-			if (*cc=='i') os << ic,cc++;
-			else os << *cc++;
+	}else{
+		for (auto &i:cv){
+			const char *cc=c+1;
+			while (*cc!='{') os << *cc++;
+			cc=__format(os,cc,i);
+			while (*cc!='}') os << *cc++;
+			ct=cc;
 		}
-		cc=__format(os,cc,i);
-		while (*cc!='}') os << *cc++;
-		ct=cc;
-		ic++;
 	}
 	return ct+1;
 }
@@ -113,21 +111,15 @@ template<class T,class ...Args>
 Rtar<T,Args&...> rtar(T &a,Args&... rest){
 	return Rtar<T,Args&...>(a,tie(rest...));
 }
-template<size_t i,class T,class ...Args>
-auto operator>>(istream& is,Rtar<T,Args&...> r)->decltype(
-typename enable_if<i==tuple_size<decltype(r.n)>::value>::type(1),is){
+template<size_t i,class U,class ...Args,class T=tuple<Args&...>>
+auto operator>>(istream& is,Rtar<U,Args&...> r)->decltype(END_TUPLE,is){
 	return is>>r.a;
 }
-template<size_t i=0,class T,class ...Args>
-auto operator>>(istream& is,Rtar<T,Args&...> r)->decltype(
-typename enable_if<i!=tuple_size<decltype(r.n)>::value>::type(1),is){
-	using OT=typename decay<decltype(r.a)>::type::value_type;
-	auto inserter=back_inserter(r.a);
-	for (size_t j=0;j<get<i>(r.n);j++){
-		OT w;
-		operator>> <i+1>(is,Rtar<OT,Args&...>(w,r.n));
-		inserter=w;
-	}
+template<size_t i=0,class U,class ...Args,class T=tuple<Args&...>>
+auto operator>>(istream& is,Rtar<U,Args&...> r)->decltype(FOR_TUPLE,is){
+	r.a=typename decay<U>::type(get<i>(r.n));
+	for (auto &w:r.a)
+		operator>> <i+1>(is,Rtar<decltype(w),Args&...>(w,r.n));
 	return is;
 }
 template<class T1,class T2>
@@ -138,3 +130,4 @@ template<class T1,class T2,class ...T3>
 bool cmin(T1 &a,const T2 b,const T3 ...rest){return cmin(a,b)|cmin(a,rest...);}
 template<class T1,class T2,class ...T3>
 bool cmax(T1 &a,const T2 b,const T3 ...rest){return cmax(a,b)|cmax(a,rest...);}
+bool MULTIDATA=true;

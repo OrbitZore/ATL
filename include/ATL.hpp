@@ -2,6 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 #include "cardinal.hpp"
+#include "vector.hpp"
 #include "dijkstra.hpp"
 #include "EK.hpp"
 #include "fft.hpp"
@@ -11,6 +12,7 @@ using namespace std;
 #include "math.hpp"
 #include "matrix.hpp"
 #include "mfset.hpp"
+#include "kdbitree.hpp"
 #include "mint.hpp"
 #include "network.hpp"
 #include "prime.hpp"
