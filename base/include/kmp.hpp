@@ -10,7 +10,7 @@ vector<int> to_next(T s){
 	return next;
 }
 template<class T>
-vector<int> KMP(T a,T b){
+vector<int> kmp(T a,T b){
 	vector<int> pos;
 	auto bn=to_next(b);
 	int ai=0,bi=0;

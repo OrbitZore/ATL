@@ -5,6 +5,10 @@ using INT=int;
 #define pb push_back
 #define eb emplace_back
 #define all(a) (a).begin(),(a).end()
+template<class T>
+using refT=reference_wrapper<T>;
+template<class T>
+using crefT=reference_wrapper<const T>;
 auto &_=std::ignore;
 using ll=long long;
 template<class T>
