@@ -1,10 +1,10 @@
 #define op_array(x) \
 template<class T,size_t d> \
-array<T,d>& operator x##=(array<T,d>& a,const array<T,d>& b){for (size_t i=0;i<d;i++) a[i]x##=b[i];return a;}\
+array<T,d>& operator x##=(array<T,d>& a,const array<T,d>& b){for (size_t i=0;i<d;i++) a[i] x##=b[i];return a;}\
 template<class T,class U,size_t d>\
-array<T,d>& operator x##=(array<T,d>& a,const U& b){for (size_t i=0;i<d;i++) a[i]x##=b;return a;}\
+auto operator x##=(array<T,d>& a,const U& b)->decltype(T(declval<U>()),a){for (size_t i=0;i<d;i++) a[i] x##=b;return a;}\
 template<class T,size_t d,class U>\
-array<T,d> operator x (const array<T,d>& a,const U& b){array<T,d> k(a);k x ## =b;return k;}
+auto operator x (const array<T,d>& a,const U& b)->decltype(T(declval<U>()),array<T,d>()){array<T,d> k(a);k x##=b;return k;}
 op_array(+) op_array(-) op_array(*) op_array(/)
 template<class T>
 using vec2=array<T,2>;
@@ -13,8 +13,7 @@ using vec3=array<T,3>;
 template<class T,size_t d>
 T dot(const array<T,d>& a,const array<T,d>& b){
 	T ans=0;
-	for (size_t i=0;i<d;i++)
-		ans+=a[i]*b[i];
+	for (size_t i=0;i<d;i++) ans+=a[i]*b[i];
 	return ans;
 }
 template<class T,size_t d>

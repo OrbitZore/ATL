@@ -56,11 +56,11 @@ auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLE(T,Out),c+1
 	return c+1;
 }
 template<size_t i,class T>
-auto __format(ostream &os,const char *c,const T& cv)->decltype(END_TUPLE,c+1){
+auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLEN(T,For),END_TUPLE,c+1){
 	return c;
 }
 template<size_t i=0,class T>
-auto __format(ostream &os,const char *c,const T& cv)->decltype(FOR_TUPLE,c+1){
+auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLEN(T,For),FOR_TUPLE,c+1){
 	while (*c!='{') os << *c++;
 	c=__format(os,c,get<i>(cv));
 	return __format<i+1>(os,c,cv);
