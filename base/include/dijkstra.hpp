@@ -2,7 +2,7 @@ template<class vT=int,class GT>
 vector<vT> dijkstra(const GT &G,int i){
 	using P=pair<vT,int>;
 	const auto n=G.size();
-	vector<vT> dis(n,(vT)INF);
+	vector<vT> dis(n,(vT)INF/2);
 	vector<bool> book(n,true);
 	dis[i]=0;
 	set<P> p;

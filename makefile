@@ -4,7 +4,7 @@ Document/Document.md: base/include/*.hpp
 	for i in *.hpp; do \
 		echo "# $$i"; \
 		echo ; \
-		echo \`\`\`cpp; \
+		echo \`\`\`{.cpp .numberLines}; \
 		cat "$$i"; \
 		echo ; \
 		echo \`\`\`; \
@@ -13,8 +13,8 @@ Document/Document.md: base/include/*.hpp
 Document/Document.pdf: Document/Document.md
 	pandoc -s \
 	--pdf-engine=xelatex \
+	--template eisvogel --listings \
 	--toc \
-	-H Document/header.latex \
 	Document/Document.md -o Document/Document.pdf
 clean:
 	rm Document/Document.pdf Document/Document.md
