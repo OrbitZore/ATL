@@ -1,90 +1,65 @@
 template<class T>
 struct segtree{
-    T fsum;
-    virtual ~segtree(){}
-    virtual void dadd(const T &nadd)=0;
-    virtual void add(const ll &l,const ll &r,const T &nadd)=0;
-    virtual void dmul(const T &nadd)=0;
-    virtual void mul(const ll &l,const ll &r,const T &nadd)=0;
-    virtual T sum(const ll &l,const ll &r)=0;
+	const int l,r,mid;
+	T fadd,fmul,fsum;
+	unique_ptr<segtree> ch[2];
+	segtree(const int l,const int r):l(l),r(r),mid((l+r)/2),
+		fadd(0),fmul(1),fsum(0){
+		if (l!=r){
+			ch[0].reset(new segtree(l,mid));
+			ch[1].reset(new segtree(mid+1,r));
+		}
+	}
+	void dmul(const T& v){
+		fmul*=v;
+		fadd*=v;
+		fsum*=v;
+	}
+	void dadd(const T& v){
+		fadd+=v;
+		fsum+=v*(r-l+1);
+	}
+	void down(){
+		if (ch[0]){
+			if (fmul!=1){
+				ch[0]->dmul(fmul);
+				ch[1]->dmul(fmul);
+				fmul=1;
+			}
+			if (fadd!=0){
+				ch[0]->dadd(fadd);
+				ch[1]->dadd(fadd);
+				fadd=0;
+			}
+		}
+	}
+	void up_sum(){
+		if (ch[0]){
+			fsum=ch[0]->fsum+ch[1]->fsum;
+		}
+	}
+	void add(const int L,const int R,const T& v){
+		if (L<=l&&r<=R) return dadd(v);
+		down();
+		if (L<=mid) ch[0]->add(L,R,v);
+		if (mid<R) ch[1]->add(L,R,v);
+		up_sum();
+	}
+	void mul(const int L,const int R,const T& v){
+		if (L<=l&&r<=R) return dmul(v);
+		down();
+		if (L<=mid) ch[0]->mul(L,R,v);
+		if (mid<R) ch[1]->mul(L,R,v);
+		up_sum();
+	}
+	
+	T sum(const int L,const int R){
+		if (L<=l&&r<=R) return fsum;
+		T fsum=0;
+		down();
+		if (L<=mid) fsum+=ch[0]->sum(L,R);
+		if (mid+1<=R) fsum+=ch[1]->sum(L,R);
+		up_sum();
+		return fsum;
+	}
 };
-template<class T,class U>
-unique_ptr<segtree<T>> make_seg(const U& op,const U& ed);
-template<class T>
-struct segtreec:public segtree<T>{
-	using segtree<T>::fsum;
-    unique_ptr<segtree<T>> lson,rson;
-    ll count,mid;
-    T fadd,fmul;
-    template<class U>
-    segtreec(const U& op,const U& ed):fadd(0),fmul(1){
-    	mid=(count=ed-op)>>1;
-    	lson=make_seg<T>(op,op+mid);
-    	rson=make_seg<T>(op+mid,ed);
-    	pushup();
-    }
-    void pushdown(){
-        lson->dmul(fmul);
-        rson->dmul(fmul);
-        fmul=1;
-        lson->dadd(fadd);
-        rson->dadd(fadd);
-        fadd=0;
-    }
-    void pushup(){
-        fsum=lson->fsum+rson->fsum;
-    }
-    void dadd(const T &nadd){
-        fadd+=nadd;
-        fsum+=nadd*count;
-    }
-    void add(const ll &l,const ll &r,const T &nadd){
-        if (l<=1&&count<=r)
-            dadd(nadd);
-        else{
-            pushdown();
-            if (l<=mid) lson->add(l,r,nadd);
-            if (r>mid) rson->add(l-mid,r-mid,nadd);
-            pushup();
-        }
-    }
-    void dmul(const T &nmul){
-    	fmul*=nmul;
-        fadd*=nmul;
-        fsum*=nmul;
-    }
-    void mul(const ll &l,const ll &r,const T &nmul){
-        if (l<=1&&count<=r)
-            dmul(nmul);
-        else{
-            pushdown();
-            if (l<=mid) lson->mul(l,r,nmul);
-            if (r>mid) rson->mul(l-mid,r-mid,nmul);
-            pushup();
-        }
-    }
-    T sum(const ll &l,const ll &r){
-        if (l<=1&&count<=r) return fsum;
-        pushdown();
-        T ans=0;
-        if (l<=mid) ans+=lson->sum(l,r);
-        if (r>mid) ans+=rson->sum(l-mid,r-mid);
-        return ans;
-    }
-};
-template<class T>
-struct segtreen:public segtree<T>{
-	using segtree<T>::fsum;
-	template<class U>
-    segtreen(const U& op,const U& ed){fsum=*op;}
-    void dadd(const T &nadd){fsum+=nadd;}
-    void add(const ll &l,const ll &r,const T &nadd){fsum+=nadd;}
-    void dmul(const T &nmul){fsum*=nmul;}
-    void mul(const ll &l,const ll &r,const T &nmul){fsum*=nmul;}
-    T sum(const ll &l,const ll &r){return fsum;}
-};
-template<class T,class U>
-unique_ptr<segtree<T>> make_seg(const U& op,const U& ed){
-	if (ed-op==1) return unique_ptr<segtree<T>>(new segtreen<T>(op,ed));
-	else return unique_ptr<segtree<T>>(new segtreec<T>(op,ed));
-}

@@ -12,9 +12,7 @@ template<class T>
 using vec3=array<T,3>;
 template<class T,size_t d>
 T dot(const array<T,d>& a,const array<T,d>& b){
-	T ans=0;
-	for (size_t i=0;i<d;i++) ans+=a[i]*b[i];
-	return ans;
+	return inner_product(a.begin(),a.end(),b.begin(),T(0));
 }
 template<class T,size_t d>
 T abs(const array<T,d>& a){return sqrt(dot(a,a));}
@@ -24,6 +22,6 @@ template<class T>
 vec3<T> crs(const vec3<T> &a,const vec3<T> &b){return {a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]};}
 template<class T,size_t d>
 istream& operator>>(istream& is,array<T,d> &p){
-	for (size_t i=0;i<d;i++) is>>p[i];
+	copy_n(istream_iterator<T>(is),d,p.begin());
 	return is;
 }
