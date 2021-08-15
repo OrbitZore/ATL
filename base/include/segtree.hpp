@@ -1,11 +1,13 @@
-template<class T>
+
+template<class T,class IT=int>
 struct segtree{
-	const int l,r,mid;
+	const IT l,r;IT mid;
 	T fadd,fmul,fsum;
 	unique_ptr<segtree> ch[2];
-	segtree(const int l,const int r):l(l),r(r),mid((l+r)/2),
-		fadd(0),fmul(1),fsum(0){
-		if (l!=r){
+	segtree(const int l,const int r):l(l),r(r),mid(0),fadd(0),fmul(1),fsum(0){}
+	void wake(){
+		if (mid==0){
+			mid=(l+r)/2;
 			ch[0].reset(new segtree(l,mid));
 			ch[1].reset(new segtree(mid+1,r));
 		}
@@ -19,47 +21,38 @@ struct segtree{
 		fadd+=v;
 		fsum+=v*(r-l+1);
 	}
-	void down(){
-		if (ch[0]){
-			if (fmul!=1){
-				ch[0]->dmul(fmul);
-				ch[1]->dmul(fmul);
-				fmul=1;
-			}
-			if (fadd!=0){
-				ch[0]->dadd(fadd);
-				ch[1]->dadd(fadd);
-				fadd=0;
-			}
+	void download(){
+		if (fmul!=1){
+			ch[0]->dmul(fmul);
+			ch[1]->dmul(fmul);
+			fmul=1;
+		}
+		if (fadd!=0){
+			ch[0]->dadd(fadd);
+			ch[1]->dadd(fadd);
+			fadd=0;
 		}
 	}
-	void up_sum(){
-		if (ch[0]){
-			fsum=ch[0]->fsum+ch[1]->fsum;
-		}
-	}
-	void add(const int L,const int R,const T& v){
-		if (L<=l&&r<=R) return dadd(v);
-		down();
-		if (L<=mid) ch[0]->add(L,R,v);
-		if (mid<R) ch[1]->add(L,R,v);
-		up_sum();
-	}
-	void mul(const int L,const int R,const T& v){
-		if (L<=l&&r<=R) return dmul(v);
-		down();
-		if (L<=mid) ch[0]->mul(L,R,v);
-		if (mid<R) ch[1]->mul(L,R,v);
-		up_sum();
-	}
-	
-	T sum(const int L,const int R){
-		if (L<=l&&r<=R) return fsum;
-		T fsum=0;
-		down();
-		if (L<=mid) fsum+=ch[0]->sum(L,R);
-		if (mid+1<=R) fsum+=ch[1]->sum(L,R);
-		up_sum();
-		return fsum;
+	void upload(){
+		fsum=ch[0]->fsum+ch[1]->fsum;
 	}
 };
+template<class T0,class T1,class T2,class T3=decltype(declval<T0>().l)>
+void edit(T0& tree,const T3& L,const T3& R,void (T0::*const& dfunc)(T1),const T2& v){
+	if (L<=tree.l&&tree.r<=R) return (tree.*dfunc)(v);
+	tree.wake();
+	tree.download();
+	if (L<=tree.mid) edit(*tree.ch[0],L,R,dfunc,v);
+	if (tree.mid+1<=R) edit(*tree.ch[1],L,R,dfunc,v);
+	tree.upload();
+}
+template<class T0,class T1,class T2,class opT,class T3=decltype(declval<T0>().l)>
+T2 query(T0& tree,const T3& L,const T3& R,T1 T0::*const& dfunc,const T2& ini,const opT& op){
+	if (L<=tree.l&&tree.r<=R) return op(ini,tree.*dfunc);
+	tree.wake();
+	tree.download();
+	T2 a=ini;
+	if (L<=tree.mid) a=op(a,query(*tree.ch[0],L,R,dfunc,ini,op));
+	if (tree.mid+1<=R) a=op(a,query(*tree.ch[1],L,R,dfunc,ini,op));
+	return a;
+}
