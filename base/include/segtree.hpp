@@ -56,3 +56,5 @@ T2 query(T0& tree,const T3& L,const T3& R,T1 T0::*const& dfunc,const T2& ini,con
 	if (tree.mid+1<=R) a=op(a,query(*tree.ch[1],L,R,dfunc,ini,op));
 	return a;
 }
+#define edit(t,l,r,dfunc,v) edit(t,l,r,&decltype(t)::dfunc,v)
+#define query(t,l,r,fobj,v,op) query(t,l,r,&decltype(t)::fobj,v,op)

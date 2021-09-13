@@ -1,6 +1,16 @@
 #include <bits/stdc++.h>
 using namespace std;
+#if __cplusplus < 201703L
+template<class T, class U=T>
+T exchange(T& obj, U&& new_value){
+    T old_value=move(obj);
+    obj=forward<U>(new_value);
+    return old_value;
+}
+#endif
 using INT=int;
+#define x first
+#define y second
 //#define int long long
 #define pb push_back
 #define eb emplace_back
