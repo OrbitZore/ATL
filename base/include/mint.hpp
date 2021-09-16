@@ -1,12 +1,17 @@
+#define op_mint(op)\
+_mint operator op (const _mint a)const{_mint k(*this);k op##=a;return k;}
+#define cmp_mint(op)\
+bool operator op (const _mint a)const{return v op a.v;}
 template<class T,class uT>
 struct _mint{
 	T v;
 	static T mod;
 	_mint()=default;
-	_mint(const T &a){(v=(a+mod)%mod);}
+	template<class iT>
+	_mint(const iT &a){(v=(a+mod)%mod);}
 	_mint& operator+=(const _mint a){return (v+=a.v)>=mod&&(v-=mod),*this;}
 	_mint& operator-=(const _mint a){return (v-=a.v)<0&&(v+=mod),*this;}
-	_mint& operator*=(const _mint a){return (v=(uT)v*a.v)%=mod,*this;}
+	_mint& operator*=(const _mint a){return (v=((uT)v*a.v)%mod),*this;}
 	op_mint(+) op_mint(-) op_mint(*)
 	cmp_mint(<) cmp_mint(>) cmp_mint(<=) cmp_mint(>=) cmp_mint(!=) cmp_mint(==)
 	#ifdef ATL_MATH
