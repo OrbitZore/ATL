@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#if __cplusplus < 201703L
+#if __cplusplus < 201402L
 template<class T, class U=T>
 T exchange(T& obj, U&& new_value){
     T old_value=move(obj);
@@ -8,6 +8,7 @@ T exchange(T& obj, U&& new_value){
     return old_value;
 }
 #endif
+#define cons(a,...) a=typename decay<decltype(a)>::type(__VA_ARGS__)
 using INT=int;
 #define x first
 #define y second
@@ -40,6 +41,8 @@ struct name{\
 #define ENABLEN(T,name) enableif_t<!can##name<T>::value>(1)
 #define FOR_TUPLE enableif_t<i!=tuple_size<T>::value>(1)
 #define END_TUPLE enableif_t<i==tuple_size<T>::value>(1)
+#define FOR_TUPLET(T) enableif_t<i!=tuple_size<T>::value>(1)
+#define END_TUPLET(T) enableif_t<i==tuple_size<T>::value>(1)
 
 #define DEF_INF(name,exp)\
 constexpr struct{\
@@ -59,6 +62,25 @@ auto operator>>(istream& is,T &r)->decltype(FOR_TUPLE,is){
 	is>>get<i>(r);
 	return operator>> <i+1>(is,r);
 }
+template<size_t i,class T>
+auto operator<<(ostream& is,const T &r)->decltype(END_TUPLE,is){
+	return is;
+}
+template<size_t i=0,class T>
+auto operator<<(ostream& is,const T &r)->decltype(FOR_TUPLE,is){
+	is<<get<i>(r);
+	return operator<< <i+1>(is,r);
+}
+template<size_t i,class ...Args>
+auto operator>>(istream& is,const tuple<Args&...> &r)->decltype(END_TUPLET(tuple<Args&...>),is){
+	return is;
+}
+template<size_t i=0,class ...Args>
+auto operator>>(istream& is,const tuple<Args&...> &r)->decltype(FOR_TUPLET(tuple<Args&...>),is){
+	is>>get<i>(r);
+	return operator>> <i+1>(is,r);
+}
+
 template<class T>
 auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLE(T,Out),c+1){
 	os << cv;
