@@ -63,11 +63,11 @@ auto operator>>(istream& is,T &r)->decltype(FOR_TUPLE,is){
 	return operator>> <i+1>(is,r);
 }
 template<size_t i,class T>
-auto operator<<(ostream& is,const T &r)->decltype(END_TUPLE,is){
+auto operator<<(ostream& is,const T &r)->decltype(END_TUPLE,ENABLEN(T,For),is){
 	return is;
 }
 template<size_t i=0,class T>
-auto operator<<(ostream& is,const T &r)->decltype(FOR_TUPLE,is){
+auto operator<<(ostream& is,const T &r)->decltype(FOR_TUPLE,ENABLEN(T,For),is){
 	is<<get<i>(r);
 	return operator<< <i+1>(is,r);
 }
@@ -119,19 +119,21 @@ void _format(ostream &os,const char *c){
 	while (*c!='{'&&*c!='\0') os<< *c++;
 }
 template<class T,class ...Args>
-void _format(ostream &os,const char *c,const T &a,Args&& ...rest){
+void _format(ostream &os,const char *c,const T &a,const Args& ...rest){
 	while (*c!='{'&&*c!='\0') os<< *c++;
 	if (*c=='{') c=__format(os,c,a);
-	_format(os,c,forward<Args>(rest)...);
+	_format(os,c,rest...);
 }
 template<class ...Args>
-string format(const char *c,Args&& ...rest){
+string format(const char *c,const Args& ...rest){
 	ostringstream os;
-	_format(os,c,forward<Args>(rest)...);
+	_format(os,c,rest...);
 	return os.str();
 }
 template<class ...Args>
-ostream& print(const char *c,Args&& ...rest){return _format(cout,c,forward<Args>(rest)...),cout;}
+ostream& print(const char *c,const Args& ...rest){return _format(cout,c,rest...),cout;}
+template<class ...Args>
+ostream& println(const char *c,const Args& ...rest){return print(c,rest...)<<endl;}
 
 #ifdef LOCAL
 #define debug(...) cerr<<format(__VA_ARGS__)
