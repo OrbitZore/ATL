@@ -1,5 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
+struct FAST_IO{
+	FAST_IO(){
+		ios_base::sync_with_stdio(false);
+		cin.tie(NULL);
+	}
+}__fast_io;
 #if __cplusplus < 201402L
 template<class T, class U=T>
 T exchange(T& obj, U&& new_value){
