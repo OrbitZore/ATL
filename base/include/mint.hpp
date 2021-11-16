@@ -1,9 +1,16 @@
-#define op_mint(op)\
-_mint operator op (const _mint a)const{_mint k(*this);k op##=a;return k;}
-#define cmp_mint(op)\
-bool operator op (const _mint a)const{return v op a.v;}
+#ifndef __OP__
+#define __OP__
+#define def_op(op)\
+this_type operator op (const this_type& a)const{this_type k(*this);k op##=a;return k;}
+#define def_cmp(op,n2)\
+bool operator op (const this_type& a)const{return n2 op a.n2;}
+#define def_all_cmp(n2)\
+def_cmp(<,n2) def_cmp(>,n2) def_cmp(<=,n2) \
+def_cmp(>=,n2) def_cmp(!=,n2) def_cmp(==,n2)
+#endif
 template<class T,class uT>
 struct _mint{
+	using this_type=_mint;
 	T v;
 	static T mod;
 	_mint()=default;
@@ -12,12 +19,12 @@ struct _mint{
 	_mint& operator+=(const _mint a){return (v+=a.v)>=mod&&(v-=mod),*this;}
 	_mint& operator-=(const _mint a){return (v-=a.v)<0&&(v+=mod),*this;}
 	_mint& operator*=(const _mint a){return (v=((uT)v*a.v)%mod),*this;}
-	op_mint(+) op_mint(-) op_mint(*)
-	cmp_mint(<) cmp_mint(>) cmp_mint(<=) cmp_mint(>=) cmp_mint(!=) cmp_mint(==)
+	def_op(+) def_op(-) def_op(*)
+	def_all_cmp(v)
 	#ifdef ATL_MATH
 	_mint inverse()const{return get<1>(Fexgcd(v,mod));}
 	_mint& operator/=(const _mint a){return (*this)*=a.inverse(),*this;}
-	op_mint(/)
+	def_op(/)
 	#endif
 };
 template<class T,class uT>

@@ -1,10 +1,13 @@
 #define op_array(x) \
 template<class T,size_t d> \
-array<T,d>& operator x##=(array<T,d>& a,const array<T,d>& b){for (size_t i=0;i<d;i++) a[i] x##=b[i];return a;}\
-template<class T,class U,size_t d>\
-auto operator x##=(array<T,d>& a,const U& b)->decltype(T(declval<U>()),a){for (size_t i=0;i<d;i++) a[i] x##=b;return a;}\
-template<class T,size_t d,class U>\
-array<T,d> operator x (const array<T,d>& a,const U& b){array<T,d> k(a);k x##=b;return k;}
+array<T,d>& operator x##=(array<T,d>& a,const array<T,d>& b){for (int i=0;i<d;i++) a[i] x##=b[i];return a;}\
+template<class T,size_t d>\
+array<T,d>& operator x##=(array<T,d>& a,const T& b){for (int i=0;i<d;i++) a[i] x##=b;return a;}\
+template<class T,size_t d> \
+array<T,d> operator x(const array<T,d>& a,const array<T,d>& b){array<T,d> c;for (int i=0;i<d;i++) c=a[i] x b[i];return c;}\
+template<class T,size_t d>\
+array<T,d> operator x(const array<T,d>& a,const T& b){array<T,d> c;for (int i=0;i<d;i++) c=a[i] x b;return c;}\
+
 op_array(+) op_array(-) op_array(*) op_array(/)
 template<class T>
 using vec2=array<T,2>;
@@ -12,7 +15,9 @@ template<class T>
 using vec3=array<T,3>;
 template<class T,size_t d>
 T dot(const array<T,d>& a,const array<T,d>& b){
-	return inner_product(a.begin(),a.end(),b.begin(),T(0));
+	T c=0;
+	for (auto& i:a*b) c+=i;
+	return c;
 }
 template<class T,size_t d>
 T abs(const array<T,d>& a){return sqrt(dot(a,a));}
