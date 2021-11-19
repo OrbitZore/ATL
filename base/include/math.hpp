@@ -9,7 +9,7 @@ T power(T a,size_t b,const T &unit=1){
 }
 constexpr ll ceildiv(const ll a,const ll b){return a/b+(a%b?1:0);}
 tuple<ll,ll,ll> exgcd(ll a,ll b){//a1+b2=gcd(a,b)
-	if (b==0) return {a,1,0};
+	if (b==0) return make_tuple(a,1,0);
 	ll g,x,y;
 	tie(g,x,y)=exgcd(b,a%b);
 	return make_tuple(g,y,x-a/b*y);
