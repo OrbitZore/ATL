@@ -4,9 +4,9 @@ struct segtree{
 	const IT l,r;IT mid;
 	T fadd,fmul,fsum;
 	unique_ptr<segtree> ch[2];
-	segtree(const int l,const int r):l(l),r(r),mid(0),fadd(0),fmul(1),fsum(0){}
+	segtree(const int l,const int r):l(l),r(r),mid(INF),fadd(0),fmul(1),fsum(0){}
 	void wake(){
-		if (mid==0){
+		if (mid==(IT)INF){
 			mid=(l+r)/2;
 			ch[0].reset(new segtree(l,mid));
 			ch[1].reset(new segtree(mid+1,r));

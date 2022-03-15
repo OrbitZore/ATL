@@ -22,10 +22,6 @@ using INT=int;
 #define pb push_back
 #define eb emplace_back
 #define all(a) (a).begin(),(a).end()
-template<class T>
-using refT=reference_wrapper<T>;
-template<class T>
-using crefT=reference_wrapper<const T>;
 auto &_=std::ignore;
 using ll=long long;
 template<class T>
@@ -68,15 +64,7 @@ auto operator>>(istream& is,T &r)->decltype(FOR_TUPLE,is){
 	is>>get<i>(r);
 	return operator>> <i+1>(is,r);
 }
-template<size_t i,class T>
-auto operator<<(ostream& is,const T &r)->decltype(END_TUPLE,ENABLEN(T,For),is){
-	return is;
-}
-template<size_t i=0,class T>
-auto operator<<(ostream& is,const T &r)->decltype(FOR_TUPLE,ENABLEN(T,For),is){
-	is<<get<i>(r);
-	return operator<< <i+1>(is,r);
-}
+
 template<size_t i,class ...Args>
 auto operator>>(istream& is,const tuple<Args&...> &r)->decltype(END_TUPLET(tuple<Args&...>),is){
 	return is;
@@ -88,6 +76,16 @@ auto operator>>(istream& is,const tuple<Args&...> &r)->decltype(FOR_TUPLET(tuple
 }
 
 template<class T>
+auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLE(T,Out),c+1);
+template<size_t i,class T>
+auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLEN(T,For),END_TUPLE,c+1);
+template<size_t i=0,class T>
+auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLEN(T,For),FOR_TUPLE,c+1);
+template<class T>
+auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLEN(T,Out),ENABLE(T,For),c+1);
+
+
+template<class T>
 auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLE(T,Out),c+1){
 	os << cv;
 	while (*c!='}') c++;
@@ -97,7 +95,7 @@ template<size_t i,class T>
 auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLEN(T,For),END_TUPLE,c+1){
 	return c;
 }
-template<size_t i=0,class T>
+template<size_t i,class T>
 auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLEN(T,For),FOR_TUPLE,c+1){
 	while (*c!='{') os << *c++;
 	c=__format(os,c,get<i>(cv));
@@ -107,9 +105,13 @@ template<class T>
 auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLEN(T,Out),ENABLE(T,For),c+1){
 	const char *ct=c+1;
 	if (cv.size()==0){
-		while (*ct!='}') ct++;
-		ct++;
-		while (*ct!='}') ct++;
+		int b=1;
+		while (1){
+			if (*ct=='}') b--;
+			if (*ct=='{') b++;
+			if (!b) break;
+			ct++;
+		}
 	}else{
 		for (auto &i:cv){
 			const char *cc=c+1;
@@ -141,7 +143,7 @@ ostream& print(const char *c,const Args& ...rest){return _format(cout,c,rest...)
 template<class ...Args>
 ostream& println(const char *c,const Args& ...rest){return print(c,rest...)<<endl;}
 
-#ifdef LOCAL
+#ifndef LOCAL
 #define debug(...) cerr<<format(__VA_ARGS__)
 #else
 #define debug(...) cerr
