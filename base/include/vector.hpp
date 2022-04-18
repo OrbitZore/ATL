@@ -4,9 +4,9 @@ array<T,d>& operator x##=(array<T,d>& a,const array<T,d>& b){for (int i=0;i<d;i+
 template<class T,size_t d>\
 array<T,d>& operator x##=(array<T,d>& a,const T& b){for (int i=0;i<d;i++) a[i] x##=b;return a;}\
 template<class T,size_t d> \
-array<T,d> operator x(const array<T,d>& a,const array<T,d>& b){array<T,d> c;for (int i=0;i<d;i++) c=a[i] x b[i];return c;}\
+array<T,d> operator x(const array<T,d>& a,const array<T,d>& b){array<T,d> c;for (int i=0;i<d;i++) c[i]=a[i] x b[i];return c;}\
 template<class T,size_t d>\
-array<T,d> operator x(const array<T,d>& a,const T& b){array<T,d> c;for (int i=0;i<d;i++) c=a[i] x b;return c;}\
+array<T,d> operator x(const array<T,d>& a,const T& b){array<T,d> c;for (int i=0;i<d;i++) c[i]=a[i] x b;return c;}\
 
 op_array(+) op_array(-) op_array(*) op_array(/)
 template<class T>

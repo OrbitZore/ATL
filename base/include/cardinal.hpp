@@ -16,6 +16,12 @@ T exchange(T& obj, U&& new_value){
 #endif
 #define cons(a,...) a=typename decay<decltype(a)>::type(__VA_ARGS__)
 using INT=int;
+#define DEF_NUM(num) \
+using i##num=int##num##_t;using u##num=uint##num##_t;
+DEF_NUM(8)DEF_NUM(16)DEF_NUM(32)DEF_NUM(64)
+using i128=__int128;using u128=unsigned __int128;
+using usize=uintptr_t;using isize=intptr_t;
+using f32=float;using f64=double;using f128=long double;
 #define x first
 #define y second
 //#define int long long
@@ -54,6 +60,7 @@ constexpr struct{\
 
 DEF_CAN(Out,(cout<<*(T*)(0))) DEF_CAN(For,begin(*(T*)(0)))
 DEF_INF(INF,max) DEF_INF(MINF,min)
+DEF_CAN(Array,declval<T>()[0])
 
 template<size_t i,class T>
 auto operator>>(istream& is,T &r)->decltype(END_TUPLE,is){
@@ -143,11 +150,30 @@ ostream& print(const char *c,const Args& ...rest){return _format(cout,c,rest...)
 template<class ...Args>
 ostream& println(const char *c,const Args& ...rest){return print(c,rest...)<<endl;}
 
-#ifndef LOCAL
+#ifndef ONLINE_JUDGE
 #define debug(...) cerr<<format(__VA_ARGS__)
+#define debugln(...) cerr<<format(__VA_ARGS__)<<endl
 #else
 #define debug(...) cerr
+#define debugln(...) cerr
 #endif
+
+template<class T>
+uintptr_t flat(T* b){
+	return reinterpret_cast<uintptr_t>(b);
+}
+template<class T>
+auto index(const T a[],uintptr_t p)->decltype(ENABLEN(T,Array),tuple<int>()){
+	return (p-flat(&a[0]))/sizeof(T);
+}
+template<class T>
+auto index(const T a[],uintptr_t p)->decltype(ENABLE(T,Array),
+	tuple_cat(tuple<int>(),index(a[0],p))){
+	int i=(p-flat(a))/sizeof(a[0]);
+	p-=i*sizeof(a[0]);
+	return tuple_cat(tuple<int>(i),index(a[0],p));
+}
+
 template<class T,class ...Args>
 struct Rtar{
 	T& a;tuple<Args...> n;
@@ -176,4 +202,5 @@ template<class T1,class T2,class ...T3>
 bool cmin(T1 &a,const T2 b,const T3 ...rest){return cmin(a,b)|cmin(a,rest...);}
 template<class T1,class T2,class ...T3>
 bool cmax(T1 &a,const T2 b,const T3 ...rest){return cmax(a,b)|cmax(a,rest...);}
+
 bool MULTIDATA=true;
