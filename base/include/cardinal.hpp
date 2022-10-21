@@ -19,7 +19,9 @@ using INT=int;
 #define DEF_NUM(num) \
 using i##num=int##num##_t;using u##num=uint##num##_t;
 DEF_NUM(8)DEF_NUM(16)DEF_NUM(32)DEF_NUM(64)
+#ifdef __SIZEOF_INT128__
 using i128=__int128;using u128=unsigned __int128;
+#endif
 using usize=uintptr_t;using isize=intptr_t;
 using f32=float;using f64=double;using f128=long double;
 #define x first

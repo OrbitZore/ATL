@@ -13,6 +13,11 @@ struct _mint{
 	using this_type=_mint;
 	T v;
 	_mint()=default;
+	static _mint from(int v){
+		_mint a;
+		a.v=v;
+		return a;
+	}
 	template<class iT>
 	_mint(const iT& a){v=a%mod;v+=v<0?mod:0;}
 	_mint& operator+=(const _mint& a){return (v+=a.v)>=mod&&(v-=mod),*this;}
