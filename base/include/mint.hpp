@@ -36,4 +36,6 @@ ostream& operator<<(ostream& os,const _mint<T,uT,mod>& a){return os<<a.v;}
 template<class T,class uT,ll mod>
 istream& operator>>(istream& os,_mint<T,uT,mod>& a){T k;os>>k;a=_mint<T,uT,mod>(k);return os;}
 using mint=_mint<int,long long,998244353>;
+#ifdef __SIZEOF_INT128__
 using mll=_mint<long long,__int128,998244353>;
+#endif
