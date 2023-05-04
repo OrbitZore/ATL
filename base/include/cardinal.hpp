@@ -83,7 +83,7 @@ inline auto operator>>(istream& is,const tuple<Args&...> &r)->decltype(FOR_TUPLE
 	is>>get<i>(r);
 	return operator>> <i+1>(is,r);
 }
-
+namespace z3475{
 template<class T>
 inline auto __format(ostream &os,const char *c,const T& cv)->decltype(ENABLE(T,Out),c+1);
 template<size_t i,class T>
@@ -151,7 +151,8 @@ template<class ...Args>
 inline ostream& print(const char *c,const Args& ...rest){return _format(cout,c,rest...),cout;}
 template<class ...Args>
 inline ostream& println(const char *c,const Args& ...rest){return print(c,rest...)<<endl;}
-
+}//namespace z3475
+using namespace z3475;
 #ifndef ONLINE_JUDGE
 #define debug(...) cerr<<format(__VA_ARGS__)
 #define debugln(...) cerr<<format(__VA_ARGS__)<<endl
